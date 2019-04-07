@@ -1,6 +1,5 @@
 import pandas as pd
 import numpy as np
-from matplotlib import pyplot as plt
 
 
 class PCAReduction:
@@ -24,9 +23,11 @@ class PCAReduction:
 
         assert(len(self.X_i[0]) >= self.n_k)
 
-    def _centralize(self):
+    def _standardize(self):
         X_m = np.array([[np.mean(X_n)] for X_n in self.X_i.T])
+        X_s = np.array([[np.std(X_n)] for X_n in self.X_i.T])
         self.X_i = self.X_i.T - X_m
+        self.X_i /= X_s
 
     def _calc_k_vec(self):
         X_cov = np.cov(self.X_i)
@@ -40,7 +41,7 @@ class PCAReduction:
         self.k_vec = np.array([eigen_pairs[k][1] for k in range(self.n_k)])
 
     def reduce(self):
-        self._centralize()
+        self._standardize()
         self._calc_k_vec()
         self.X_f = self.k_vec.dot(self.X_i)
 
@@ -50,15 +51,7 @@ def main():
     pca.gen_data()
     pca.reduce()
 
-    plt.scatter(pca.X_f[0], pca.X_f[1], s=30)
-    plt.show()
-
 
 if __name__ == "__main__":
     main()
-
-
-
-
-
 
